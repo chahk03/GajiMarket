@@ -1,4 +1,4 @@
-> <h1>구해줘 홈즈(WhereIsMyHome) Vue Project</h1>
+> <h1>SSAFY 8기 1학기 Final Project : 가지마켓</h1>
 > 정상민 차현경
 
 <br>
