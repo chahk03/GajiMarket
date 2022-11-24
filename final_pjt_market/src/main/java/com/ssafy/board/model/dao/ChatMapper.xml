@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.board.model.dao.ChatMapper">
+    <select id="selectRoomList" resultType="com.ssafy.board.model.dto.ChatRoomDTO">
+        select * from chatroom_tb
+    </select>
+    
+    <select id="selectRoomOne" parameterType="String" resultType="com.ssafy.board.model.dto.ChatRoomDTO">
+        select * from chatroom_tb
+        where roomId = #{id}
+    </select>
+    
+    <insert id="insertRoom" parameterType="com.ssafy.board.model.dto.ChatRoomDTO">
+        insert into chatroom_tb
+        values(#{roomId},#{name},#{roomMaker},#{description})
+    </insert>
+    
+    <insert id="insertMessage" parameterType="com.ssafy.board.model.dto.ChatMessageDTO">
+        insert into chatmessage_tb(roomId,writer,message,date,image)
+        values(#{roomId},#{writer},#{message},now(),#{image})
+    </insert>
+    
+    <select id="selectChatList" parameterType="String" resultType="com.ssafy.board.model.dto.ChatMessageDTO">
+        select * from chatmessage_tb
+        where roomId = #{roomId}
+    </select>
+</mapper>

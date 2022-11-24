@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.board.model.dao.AptMapper">
+    <select id="selectSidoName" parameterType="String" resultType="String">
+        select distinct sidoName from baseaddress
+    </select>
+
+    <select id="selectGugunName" parameterType="String" resultType="String">
+        select distinct gugunName from baseaddress where sidoName = #{sidoName}
+    </select>
+
+    <select id="selectDongName" resultType="String">
+        select distinct dongName from baseaddress where sidoName = #{sidoName} and gugunName = #{gugunName}
+    </select>
+
+    <select id="selectDongcode" resultType="String">
+        select dongcode from dongcode where
+        dongname=#{dongName} and sidoname = #{sidoName}
+    </select>
+
+    <select id="selectLatlng" parameterType="String" resultType="String">
+        select lat,lng from baseaddress where
+        dongname=#{dongName}
+    </select>
+
+    <select id="selectList" resultType="com.ssafy.board.model.dto.HousedealinfoDTO">
+        select
+        hd.no as dno, hi.aptName as apartmentName,hd.floor,hd.area,hd.dealamount,hi.lat as let,hi.lng,
+        hd.aptcode, hi.dongName, hd.dealYear, hd.dealMonth
+        from housedeal hd, houseinfo hi
+        where hd.aptCode = hi.aptcode and hi.dongcode = #{dongCode}
+        and dealyear = #{dealYear} and dealmonth = #{dealMonth}
+    </select>
+
+    <select id="selectDongNameByDongCode" parameterType="String" resultType="String">
+        select distinct dongName from baseaddress where dongcode = #{dongCode}
+    </select>
+    
+    <select id="selectDealinfo" parameterType="int" resultType="com.ssafy.board.model.dto.HousedealinfoDTO">
+        select 
+        hd.no as dno, hi.aptName as apartmentName,hd.floor,hd.area,hd.dealamount,hi.lat as let,hi.lng,
+        hd.aptcode, hi.dongName, hd.dealYear, hd.dealMonth
+        from housedeal hd, houseinfo hi
+        where hd.no = #{dno} and hd.aptCode = hi.aptcode
+    </select>
+    
+    <insert id="registinterest" parameterType="com.ssafy.board.model.dto.InterestareaDTO">
+        insert into interestapt
+        values (#{userid},#{aptname},#{aptcode},#{dongname},#{lat},#{lng})
+    </insert>
+    
+    <select id="listinterest" parameterType="String" resultType="com.ssafy.board.model.dto.InterestareaDTO">
+        select * from interestapt
+        where userid = #{userid}
+    </select>
+    
+    <delete id="deleteinterest">
+        delete from interestapt
+        where userid = #{userid} and aptname = #{aptname}
+    </delete>
+    
+    <select id="selectInterestCount" resultType="int">
+    	select count(*)
+    	from interestapt
+    	where userid = #{userid} and aptname = #{aptname}
+    </select>
+    
+    <select id="selectRecent" resultType="com.ssafy.board.model.dto.HousedealinfoDTO">
+        select
+        hd.no as dno, hi.aptName as apartmentName,hd.floor,hd.area,hd.dealamount,hi.lat as let,hi.lng,
+        hd.aptcode, hi.dongName, hd.dealYear, hd.dealMonth
+        from housedeal hd, houseinfo hi
+        where hd.aptCode = hi.aptcode
+        order by  hd.dealYear desc, hd.dealmonth desc, hd.dealday desc
+        limit 5
+    </select>
+</mapper>

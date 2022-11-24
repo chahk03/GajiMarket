@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.board.model.dao.MemberMapper">
+
+    <select id="login" parameterType="com.ssafy.board.model.dto.MemberDTO" resultType="com.ssafy.board.model.dto.MemberDTO">
+        select username, userid, email
+        from member_tb
+        where userid = #{userid} and userpwd = #{userpwd}
+    </select>
+    
+    <select id="checkId" parameterType="String" resultType="int">
+        select count(userid) from member_tb where userid = #{userid}
+    </select>
+    
+    <select id="checkName" parameterType="String" resultType="int">
+        select count(username) from member_tb where username = #{username}
+    </select>
+    
+    <delete id="delete" parameterType="String">
+        delete from member_tb where userid = #{userid}
+    </delete>
+    
+    <update id="userModify" parameterType="com.ssafy.board.model.dto.MemberDTO">
+        UPDATE member_tb SET userpwd = #{userpwd}, email = #{email}
+        <if test="age != null and age != ''">
+            , age = #{age}, gender = #{gender}, celebrity = #{celebrity}
+        </if>
+        WHERE userid = #{userid}
+    </update>
+    
+    <insert id="userSignup" parameterType="com.ssafy.board.model.dto.MemberDTO">
+        insert into member_tb
+        values (#{userid}, #{username}, #{userpwd}, #{email}, now(), #{age}, 
+        #{gender}, #{celebrity}, null)
+    </insert>
+    
+    <select id="userInfo" parameterType="string" resultType="com.ssafy.board.model.dto.MemberDTO">
+        select username, userid, userpwd, email, joindate, age, gender, celebrity
+        from member_tb
+        where userid = #{userid}
+    </select>
+    
+    <select id="getRefreshToken" parameterType="string" resultType="string">
+        select token
+        from member_tb
+        where userid = #{userid}
+    </select>
+    
+    <update id="saveRefreshToken" parameterType="map">
+        update member_tb
+        set token = #{token}
+        where userid = #{userid}
+    </update>
+    
+    <update id="deleteRefreshToken" parameterType="map">
+        update member_tb
+        set token = #{token, jdbcType=VARCHAR}
+        where userid = #{userid}
+    </update>
+    
+    <delete id="deleteBoardByWriter" parameterType="String">
+        delete from board_tb
+        where writer = #{username}
+    </delete>
+    <delete id="deleteChatroomByRoomMaker" parameterType="String">
+        delete from chatroom_tb
+        where roomMaker = #{username}
+    </delete>
+    <delete id="deleteMfileByUser" parameterType="String">
+        delete from mfile_tb
+        where username = #{username}
+    </delete>
+    <delete id="deleteRecommendByUser" parameterType="String">
+        delete from recommend_tb
+        where userid = #{userid}
+    </delete>
+    <delete id="deleteMember" parameterType="String">
+        delete from member_tb
+        where userid = #{userid}
+    </delete>
+</mapper>

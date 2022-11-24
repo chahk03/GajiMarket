@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.board.model.dao.BoardMapper">
+    <insert id="insert" parameterType="com.ssafy.board.model.dto.BoardDTO" useGeneratedKeys="true" keyProperty="bno" keyColumn="BNO">
+        INSERT INTO BOARD_TB(TITLE, WRITER, CONTENT, WRITE_DATE, CATEGORY, SOLDOUT)
+        VALUES(#{title}, #{writer}, #{content}, NOW(), #{category}, #{soldout})
+    </insert>
+    
+    <update id="updateReadCount" parameterType="int">
+        UPDATE BOARD_TB SET
+        READ_COUNT = READ_COUNT + 1
+        WHERE BNO = #{bno}
+    </update>
+    
+    <update id="updateRecommendPlus" parameterType="int">
+        UPDATE BOARD_TB SET
+        RECOMMEND = RECOMMEND + 1
+        WHERE BNO = #{bno}
+    </update>
+    
+    <update id="updateRecommendMinus" parameterType="int">
+        UPDATE BOARD_TB SET
+        RECOMMEND = RECOMMEND - 1
+        WHERE BNO = #{bno}
+    </update>
+    
+    <select id="selectRecommendCount" resultType="int">
+        SELECT COUNT(*)
+        FROM RECOMMEND_TB
+        WHERE USERID = #{userid} AND BNO = #{bno}
+    </select>
+    
+    <select id="selectTotalRecommendCount" resultType="int">
+        SELECT COUNT(*)
+        FROM RECOMMEND_TB
+        WHERE BNO = #{bno}
+    </select>
+    
+    <insert id="insertRecommend">
+        INSERT INTO RECOMMEND_TB(USERID, BNO)
+        VALUES(#{userid}, #{bno})
+    </insert>
+    
+    <delete id="deleteRecommend">
+        DELETE FROM RECOMMEND_TB
+        WHERE USERID = #{userid} and BNO = #{bno}
+    </delete>
+    
+    <!-- resultType="BoardDTO": 멤버 변수명과 컬럼명 같아야 함 
+         1. sql alias 사용, 2. resultMap 사용 -->
+    <select id="selectList" resultMap="rrrr">
+        SELECT BNO, TITLE, WRITER, WRITE_DATE, READ_COUNT, CATEGORY, RECOMMEND, SOLDOUT
+        FROM BOARD_TB
+        WHERE WRITER NOT LIKE '관리자'
+        ORDER BY BNO DESC
+        LIMIT #{start}, #{cnt}
+    </select>
+    
+    <select id="getAdminList" resultMap="rrrr">
+        SELECT BNO, TITLE, WRITER, WRITE_DATE, READ_COUNT, CATEGORY, RECOMMEND, SOLDOUT
+        FROM BOARD_TB
+        WHERE WRITER = '관리자'
+    </select>
+    
+    <select id="selectConditionList" parameterType="com.ssafy.board.model.dto.BoardParameterDto" resultMap="rrrr">
+        SELECT BNO, TITLE, WRITER, WRITE_DATE, READ_COUNT, CATEGORY, RECOMMEND, SOLDOUT
+        FROM BOARD_TB
+        <if test="category != null and category != ''">
+            <if test="word != null and word != ''">
+                WHERE not WRITER = "관리자" and category = #{category}
+                <if test="key == 'title'">
+                    and title like concat('%', #{word}, '%') 
+                </if>
+                <if test="key == 'writer'">
+                    and writer like concat('%', #{word}, '%') 
+                </if>
+            </if>
+            <if test="word == null or word == ''">
+                WHERE not WRITER = "관리자" and  category = #{category}
+            </if>
+        </if>
+        <if test="category == null or category == ''">
+            <if test="word != null and word != ''">
+                <if test="key == 'title'">
+                    WHERE not WRITER = "관리자" and  title like concat('%', #{word}, '%')
+                </if>
+                <if test="key == 'writer'">
+                    WHERE not WRITER = "관리자" and  writer like concat('%', #{word}, '%')
+                </if>
+            </if>
+            <if test="word == null or word == ''">
+                WHERE not WRITER = "관리자"
+            </if>
+        </if>
+        ORDER BY ${sort} DESC
+        LIMIT #{start}, #{spp}
+    </select>
+    
+    <select id="selectTotalCount" resultType="int">
+        SELECT COUNT(*)
+        FROM BOARD_TB
+    </select>
+    
+    <select id="selectConditionCount" parameterType="com.ssafy.board.model.dto.BoardParameterDto" resultType="int">
+        SELECT COUNT(*)
+        FROM BOARD_TB
+        <if test="category != null and category != ''">
+            <if test="word != null and word != ''">
+                WHERE not WRITER = "관리자" and category = #{category}
+                <if test="key == 'title'">
+                    and title like concat('%', #{word}, '%') 
+                </if>
+                <if test="key == 'writer'">
+                    and writer like concat('%', #{word}, '%') 
+                </if>
+            </if>
+            <if test="word == null or word == ''">
+                WHERE not WRITER = "관리자" and  category = #{category}
+            </if>
+        </if>
+        <if test="category == null or category == ''">
+            <if test="word != null and word != ''">
+                <if test="key == 'title'">
+                    WHERE not WRITER = "관리자" and  title like concat('%', #{word}, '%')
+                </if>
+                <if test="key == 'writer'">
+                    WHERE not WRITER = "관리자" and  writer like concat('%', #{word}, '%')
+                </if>
+            </if>
+            <if test="word == null or word == ''">
+                WHERE not WRITER = "관리자"
+            </if>
+        </if>
+    </select>
+    
+    <select id="selectOne" resultMap="rrrr">
+        SELECT BNO, TITLE, WRITER, WRITE_DATE, READ_COUNT, CONTENT, CATEGORY, RECOMMEND, SOLDOUT
+        FROM BOARD_TB
+        WHERE BNO = #{bno}
+    </select>
+    
+    <update id="update" parameterType="com.ssafy.board.model.dto.BoardDTO">
+        UPDATE BOARD_TB
+        SET TITLE = #{title}, CONTENT = #{content}, category = #{category}, soldout = #{soldout}
+        WHERE BNO = #{bno}
+    </update>
+    
+    <delete id="delete">
+        DELETE FROM BOARD_TB
+        WHERE BNO = #{bno}
+    </delete>
+    
+    <resultMap type="com.ssafy.board.model.dto.BoardDTO" id="rrrr">
+        <result column="WRITE_DATE" property="writeDate"/>
+        <result column="READ_COUNT" property="readCount"/>
+    </resultMap>
+</mapper>

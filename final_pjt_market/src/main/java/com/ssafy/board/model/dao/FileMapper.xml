@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.board.model.dao.FileMapper">
+	<insert id="insert" parameterType="com.ssafy.board.model.dto.FileDTO">
+		INSERT INTO FILE_TB(BNO, ORIGINAL_NAME, SAVED_PATH)
+		VALUES(#{bno}, #{originalName}, #{savedPath})
+	</insert>
+	
+	<insert id="update" parameterType="com.ssafy.board.model.dto.FileDTO">
+		UPDATE FILE_TB
+		SET ORIGINAL_NAME = #{originalName}, SAVED_PATH = #{savedPath}
+		WHERE BNO = #{bno}
+	</insert>
+	
+	<select id="selectFiles" resultType="com.ssafy.board.model.dto.FileDTO">
+		SELECT FNO, BNO, ORIGINAL_NAME AS 'originalName', SAVED_PATH as 'savedPath'
+		FROM FILE_TB
+		WHERE BNO = #{bno}
+	</select>
+	
+	<select id="selectOne" resultType="com.ssafy.board.model.dto.FileDTO">
+		SELECT FNO, ORIGINAL_NAME AS 'originalName', SAVED_PATH as 'savedPath'
+		FROM FILE_TB
+		WHERE FNO = #{fno}
+	</select>
+	
+	<select id="selectUserImg" resultType="com.ssafy.board.model.dto.MemberFileDTO">
+		SELECT FNO, USERNAME, ORIGINAL_NAME AS 'originalName', SAVED_PATH as 'savedPath'
+		FROM MFILE_TB
+		WHERE USERNAME = #{username}
+	</select>
+	
+	<insert id="mfileinsert" parameterType="com.ssafy.board.model.dto.MemberFileDTO">
+		insert into mfile_tb (username, ORIGINAL_NAME, SAVED_PATH, ABSOL_PATH)
+		VALUES(#{username}, #{originalName}, #{savedPath}, #{absolPath})
+	</insert>
+	
+	<update id="mfileUpdate" parameterType="com.ssafy.board.model.dto.MemberFileDTO">
+		update mfile_tb
+		set ORIGINAL_NAME = #{originalName}, SAVED_PATH = #{savedPath}, ABSOL_PATH = #{absolPath}
+		where username = #{username}
+	</update>
+</mapper>
